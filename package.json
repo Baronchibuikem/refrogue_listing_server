@@ -1,0 +1,22 @@
+{
+  "name": "refroque-listing",
+  "version": "1.0.0",
+  "description": "A web server creating for listing apartments and making it available for clients consumption through it's API's",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Baronchibuikem/refrogue_listing_server.git"
+  },
+  "author": "Baron",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Baronchibuikem/refrogue_listing_server/issues"
+  },
+  "homepage": "https://github.com/Baronchibuikem/refrogue_listing_server#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
