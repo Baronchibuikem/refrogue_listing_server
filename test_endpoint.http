@@ -1,0 +1,7 @@
+# For making a post request to login a user
+POST http://localhost:9000/delete-listing
+content-type: application/json
+
+{
+    "id": "001"
+}
