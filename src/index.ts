@@ -1,13 +1,22 @@
 import express from "express"
-import { listings } from "./listings"
+import { ApolloServer } from "apollo-server-express"
 import bodyParser from "body-parser"
+import {schema} from "./graphql"
+
+import { listings } from "./listings"
+
+const server = new ApolloServer({schema})
+
+
 const app = express();
 const port = 9000;
+
+server.applyMiddleware({ app, path: "/api"})
 
 // bodyParser.json() to help parse incoming requests as JSON and expose the resulting object on req.body
 app.use(bodyParser.json())
 // for getting all our current listings 
-app.get("/listings", (req, res) => res.send(listings));
+app.get("/", (req, res) => res.send(listings));
 
 // for deleting a particular list
 app.post('/delete-listing', (req, res) => {
