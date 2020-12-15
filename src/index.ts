@@ -1,34 +1,27 @@
-import express from "express"
-import { ApolloServer } from "apollo-server-express"
-import bodyParser from "body-parser"
-import { typeDefs, resolvers } from "./graphql"
-
-import { listings } from "./listings"
-
-const server = new ApolloServer({ typeDefs, resolvers})
+import express, { Application } from 'express'
+import { ApolloServer } from 'apollo-server-express'
+import bodyParser from 'body-parser'
+import { typeDefs, resolvers } from './graphql'
+import { connectDatabase } from './database'
+require('dotenv').config()
 
 
-const app = express();
-const port = 9000;
+const mount = async (app: Application) => {
+  const db = await connectDatabase()
+  const server = new ApolloServer({
+    typeDefs,
+    resolvers,
+    context: () => ({ db }),
+  })
+  server.applyMiddleware({ app, path: '/api' })
+  app.listen(process.env.PORT)
+  // bodyParser.json() to help parse incoming requests as JSON and expose the resulting object on req.body
+  app.use(bodyParser.json())
+  console.log(`[app] : http://localhost:${process.env.PORT}`)
 
-server.applyMiddleware({ app, path: "/api"})
-
-// bodyParser.json() to help parse incoming requests as JSON and expose the resulting object on req.body
-app.use(bodyParser.json())
-// for getting all our current listings 
-app.get("/", (req, res) => res.send(listings));
-
-// for deleting a particular list
-app.post('/delete-listing', (req, res) => {
-    const id: string = req.body.id;
-    for (let i = 0; i < listings.length; i++) {
-        if (listings[i].id === id) {
-            return res.send(listings.splice(i, 1))
-        }
-    }
-    return res.send("failed to deleted listing");
-})
+  const listings = await db.listings.find({}).toArray()
+  console.log(listings, 'listing are displayed here')
+}
 
 
-app.listen(port)
-console.log(`[app] : http://localhost:${port}`);
+mount(express())
