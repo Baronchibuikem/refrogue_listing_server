@@ -4,7 +4,7 @@ import { ObjectId } from 'mongodb';
 
 export const resolvers: IResolvers = {
   Query: {
-    listings: async(_root: undefined, _args: {}, {db}: {db: Database}): Promise<Listing[]> => {
+    listings: async (_root: undefined, _args: {}, {db}: {db: Database}): Promise<Listing[]> => {
       const response = await db.listings.find({}).toArray()
       return response
     },
