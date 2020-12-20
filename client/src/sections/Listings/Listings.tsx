@@ -1,6 +1,9 @@
-import React from "react";
-import { server } from "../lib/api/";
-import { ListingsData, DeleteListingData, DeleteListingVariables } from "./types"
+import { server, useQuery } from "../lib/api/";
+import {
+  ListingsData,
+  DeleteListingData,
+  DeleteListingVariables,
+} from "./types";
 
 const LISTINGS = `
     query Listings {
@@ -24,33 +27,67 @@ const DELETE_LISTING = `
             id
         }
     }
-`
+`;
 
 interface Props {
   title: string;
 }
 
 export const Listings = (props: Props) => {
+//   const [listings, setListings] = useState<Listing[] | null>(null);
+
+// Using our custom hooks
+  const { data, refetch } = useQuery<ListingsData>(LISTINGS);
+
+// The useEffect Hook doesn’t return any values but instead takes two arguments The first being
+// required and the second optional. The second argument of the useEffect Hook is optional and 
+// is a dependency list which allows us to tell React to skip applying the effect only until in certain conditions.
+// The useEffect Hook also provides the ability to run a cleanup after the effect. This can be done by specifying a return function at the end of our effect.
+//   useEffect(() => {
+//       console.log("Effect has run")
+
+//       return () => {
+//         console.log("Effect is cleaned up!");
+//         };
+//   },[listings, count])
+
+
+
   const { title } = props;
-  const FetchListings = async () => {
-      const { data } = await server.fetch<ListingsData>({ query: LISTINGS})
-      console.log(data.listings)
+
+
+  const deleteListing = async (id: string) => {
+    await server.fetch<
+      DeleteListingData,
+      DeleteListingVariables
+    >({
+      query: DELETE_LISTING,
+      variables: {
+        id
+      },
+    });
+    refetch()
   };
 
-  const deleteListing = async () => {
-      const {data} = await server.fetch<DeleteListingData, DeleteListingVariables>({
-          query: DELETE_LISTING,
-          variables: {
-              id: "5fd8bf64886c6734938e78c6"
-          }
-      })
-      console.log(data)
-  }
+  const listings = data ? data.listings : null;
+
+  const listingsList = listings ? (
+    <ul>
+      {listings.map((listing) => {
+        return <li key={listing.id}>{listing.title}
+        <button onClick={() => deleteListing(listing.id)}>Delete</button>
+        </li>;
+        
+      })}
+    </ul>
+  ): null;
+
   return (
     <div>
       <h2>{title}</h2>
-      <button onClick={FetchListings}>Query Listings</button>
-      <button onClick={deleteListing}>Delete a listing</button>
+      {listingsList}
+      {/* <button onClick={FetchListings}>Query Listings</button> */}
+      {/* <button onClick={deleteListing}>Delete a listing</button> */}
     </div>
   );
 };
