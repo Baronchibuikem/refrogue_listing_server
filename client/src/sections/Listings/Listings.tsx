@@ -34,13 +34,55 @@ interface Props {
 }
 
 export const Listings = (props: Props) => {
-//   const [listings, setListings] = useState<Listing[] | null>(null);
+  //   const [listings, setListings] = useState<Listing[] | null>(null);
 
-// Using our custom hooks
-  const { data, refetch } = useQuery<ListingsData>(LISTINGS);
+  // Using our custom hooks
+  const { data, refetch, loading, error } = useQuery<ListingsData>(LISTINGS);
+
+  const { title } = props;
+
+  const deleteListing = async (id: string) => {
+    await server.fetch<DeleteListingData, DeleteListingVariables>({
+      query: DELETE_LISTING,
+      variables: {
+        id,
+      },
+    });
+    refetch();
+  };
+
+  const listings = data ? data.listings : null;
+
+  const listingsList = listings ? (
+    <ul>
+      {listings.map((listing) => {
+        return (
+          <li key={listing.id}>
+            {listing.title}
+            <button onClick={() => deleteListing(listing.id)}>Delete</button>
+          </li>
+        );
+      })}
+    </ul>
+  ) : null;
+
+  if (loading) {
+    return <h2>Loading...</h2>;
+  }
+
+  if (error) {
+    return <h2>Uh oh! Something went wrong - please try again later :(</h2>;
+  }
+  return (
+    <div>
+      <h2>{title}</h2>
+      {listingsList}
+    </div>
+  );
+};
 
 // The useEffect Hook doesn’t return any values but instead takes two arguments The first being
-// required and the second optional. The second argument of the useEffect Hook is optional and 
+// required and the second optional. The second argument of the useEffect Hook is optional and
 // is a dependency list which allows us to tell React to skip applying the effect only until in certain conditions.
 // The useEffect Hook also provides the ability to run a cleanup after the effect. This can be done by specifying a return function at the end of our effect.
 //   useEffect(() => {
@@ -50,44 +92,3 @@ export const Listings = (props: Props) => {
 //         console.log("Effect is cleaned up!");
 //         };
 //   },[listings, count])
-
-
-
-  const { title } = props;
-
-
-  const deleteListing = async (id: string) => {
-    await server.fetch<
-      DeleteListingData,
-      DeleteListingVariables
-    >({
-      query: DELETE_LISTING,
-      variables: {
-        id
-      },
-    });
-    refetch()
-  };
-
-  const listings = data ? data.listings : null;
-
-  const listingsList = listings ? (
-    <ul>
-      {listings.map((listing) => {
-        return <li key={listing.id}>{listing.title}
-        <button onClick={() => deleteListing(listing.id)}>Delete</button>
-        </li>;
-        
-      })}
-    </ul>
-  ): null;
-
-  return (
-    <div>
-      <h2>{title}</h2>
-      {listingsList}
-      {/* <button onClick={FetchListings}>Query Listings</button> */}
-      {/* <button onClick={deleteListing}>Delete a listing</button> */}
-    </div>
-  );
-};

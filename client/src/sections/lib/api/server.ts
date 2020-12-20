@@ -1,10 +1,15 @@
 // import axios from "axios"
 
+// What our body properties will look like when the are returnrd from the server
 interface Body<TVariables>{
     query : string;
     variables? : TVariables
 }
 
+// what an error would look like when returned from the server
+interface Error {
+    message : string
+}
 
 export const server = {
     fetch : async <TData = any, TVariables = any>(body: Body<TVariables>) => {
@@ -15,7 +20,12 @@ export const server = {
                 },
                 body: JSON.stringify(body)
         })
-        return res.json() as Promise<{ data: TData }>;
+
+        if(!res.ok){
+            throw new Error("failed to fetch from server")
+        }
+        // Type assertion
+        return res.json() as Promise<{ data: TData, errors: Error[] }>;
     }
 }
 
