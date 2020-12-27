@@ -4,6 +4,7 @@ import bodyParser from 'body-parser'
 import { typeDefs, resolvers } from './graphql'
 import { connectDatabase } from './database'
 require('dotenv').config()
+const cors = require("cors")
 
 
 const mount = async (app: Application) => {
@@ -17,6 +18,8 @@ const mount = async (app: Application) => {
   app.listen(process.env.PORT)
   // bodyParser.json() to help parse incoming requests as JSON and expose the resulting object on req.body
   app.use(bodyParser.json())
+  // allow cross origin request
+  app.use(cors())
   console.log(`[app] : http://localhost:${process.env.PORT}`)
 
   const listings = await db.listings.find({}).toArray()

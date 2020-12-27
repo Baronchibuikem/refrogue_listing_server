@@ -1,11 +1,17 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import { Listings } from "./sections"
+import React from "react";
+import { render } from "react-dom";
+import { Listings } from "./sections";
+import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client";
 // import App from './App';
 
-ReactDOM.render(
-  <React.StrictMode>
-    <Listings title="TinyHouse Listings"/>
-  </React.StrictMode>,
-  document.getElementById('root')
+const client = new ApolloClient({
+  uri: "http://localhost:9000/api",
+  cache: new InMemoryCache(),
+});
+
+render(
+  <ApolloProvider client={client}>
+    <Listings title="The Listings Section component" />
+  </ApolloProvider>,
+  document.getElementById("root")
 );
