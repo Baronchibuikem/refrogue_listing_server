@@ -16,7 +16,7 @@ export const displayListings = gql`
   }
 `;
 
-export const deleteSingleList= gql`
+export const deleteSingleList = gql`
   mutation($id: ID!) {
     deleteListing(id: $id) {
       id
